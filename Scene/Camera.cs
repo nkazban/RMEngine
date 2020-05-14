@@ -10,11 +10,10 @@ namespace SceneModel
 {
     public class Camera
     {
-        double _yaw = 0;
-        double _pitch = -90;
 
-        double speed = 1;
         double sensivity = 0.5;
+
+        public float Zoom { get; private set; } = -1.0f;
         public Camera(Point3d position, Vector3d front)
         {
             Position = position;
@@ -29,38 +28,22 @@ namespace SceneModel
             switch (dir)
             {
                 case Direction.UP:
-                    Position += speed * Front;
+                    Position += sensivity * Vector3d.UpDirection();
                     break;
                 case Direction.DOWN:
-                    Position -= speed * Front;
+                    Position -= sensivity * Vector3d.UpDirection();
                     break;
                 case Direction.LEFT:
-                    Position -= Front.Cross(UpDirection) * speed;
+                    Position += Vector3d.LeftDirection() * sensivity;
                     break;
                 case Direction.RIGHT:
-                    Position += Front.Cross(UpDirection) * speed;
+                    Position -= Vector3d.LeftDirection() * sensivity;
                     break;
             }
         }
 
-        public void OnMouseMove(object sender, Vector2d delta)
-        {
-            double offsetX = delta.X;
-            double offsetY = delta.Y;
-            offsetX *= sensivity;
-            offsetY *= sensivity;
-            _yaw += offsetX;
-            _pitch += offsetY;
-            if (_pitch > 89.0f)
-                _pitch = 89.0f;
-            if (_pitch < -89.0f)
-                _pitch = -89.0f;
-            var front = new Vector3d(0, 0, 0);
-            front.X = Math.Cos(Helpers.ToRadians(_pitch)) * Math.Cos(Helpers.ToRadians(_yaw));
-            front.Y = Math.Sin(Helpers.ToRadians(_pitch));
-            front.Z = Math.Cos(Helpers.ToRadians(_pitch)) * Math.Sin(Helpers.ToRadians(_yaw));
-            front.Normalize();
-            Front = front;
+        public void OnMouseWheel(object sender, int sign) {
+            Position += Vector3d.ForwardDirection() * sign * sensivity;
         }
     }
 }

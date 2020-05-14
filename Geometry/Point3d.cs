@@ -39,5 +39,10 @@ namespace Geometry
         {
             return $"{X} {Y} {Z}";
         }
+
+        public static explicit operator Vector3d(Point3d p)
+        {
+            return new Vector3d(p.X, p.Y, p.Z);
+        }
     }
 }

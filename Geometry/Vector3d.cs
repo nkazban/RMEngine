@@ -20,6 +20,11 @@ namespace Geometry
 
         public double Length => Math.Sqrt(X * X + Y * Y + Z * Z);
 
+        public static Vector3d UpDirection() => new Vector3d(0, 1, 0);
+
+        public static Vector3d LeftDirection() => new Vector3d(1, 0, 0);
+
+        public static Vector3d ForwardDirection() => new Vector3d(0, 0, -1);
         public void Normalize()
         {
             X = X / Length;
@@ -37,6 +42,11 @@ namespace Geometry
         public double Dot(Vector3d v)
         {
             return v.X * X + v.Y * Y + v.Z * Z;
+        }
+
+        public Vector3d ProjectTo(Vector3d vec)
+        {
+            return vec * (vec.Dot(this) / (vec.Length * vec.Length));
         }
         public static Vector3d operator +(Vector3d v1, Vector3d v2)
         {

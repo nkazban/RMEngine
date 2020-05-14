@@ -1,4 +1,5 @@
 ﻿using Core;
+using Geometry;
 using SharpGL;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,7 @@ namespace SceneModel
 {
     public class Scene
     {
+        public Ball Ball;
         public Camera Camera;
         public GraphicsContext GC;
         public Shader shader;
@@ -51,8 +53,7 @@ namespace SceneModel
             var gl = GC.GL;
             gl.ClearColor(0.2f, 0.3f, 0.3f, 1.0f);
             gl.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
-            //sphere.Center.X += 0.01;
-            //sphere.Center.Z += 0.01;
+            //Sphere.Center.Y += 0.01;
 
             shader.Use();
 
@@ -67,16 +68,41 @@ namespace SceneModel
             {
                 gl.Uniform3(cameraUniform, (float)Camera.Position.X, (float)Camera.Position.Y, (float)Camera.Position.Z);
             }
-
-            //var sphereUniform = gl.GetUniformLocation(shader._id, "spherePosition");
-            //if (sphereUniform > -1)
-            //{
-            //    gl.Uniform3(sphereUniform, (float)sphere.Center.X, (float)sphere.Center.Y, (float)sphere.Center.Z);
-            //}
+            SetUniform(gl, shader, "sphereObj", Ball);
 
             gl.BindVertexArray(VAO[0]);
             gl.DrawArrays(OpenGL.GL_TRIANGLE_STRIP, 0, 4);
             gl.BindVertexArray(0);
+        }
+        static void SetUniform(OpenGL gl, Shader shader, string name, Vector3d vector)
+        {
+            var loc = gl.GetUniformLocation(shader._id, name);
+            if(loc > -1)
+            {
+                gl.Uniform3(loc, (float)vector.X, (float)vector.Y, (float)vector.Z);
+            }
+        }
+        static void SetUniform(OpenGL gl, Shader shader, string name, Point3d point)
+        {
+            var loc = gl.GetUniformLocation(shader._id, name);
+            if (loc > -1)
+            {
+                gl.Uniform3(loc, (float)point.X, (float)point.Y, (float)point.Z);
+            }
+        }
+        static void SetUniform(OpenGL gl, Shader shader, string name, float value) 
+        {
+            var loc = gl.GetUniformLocation(shader._id, name);
+            if (loc > -1)
+            {
+                gl.Uniform1(loc, value);
+            }
+        }
+        static void SetUniform(OpenGL gl, Shader shader, string name, Ball ball)
+        {
+            SetUniform(gl, shader, name + ".Position", ball.Center);
+            SetUniform(gl, shader, name + ".Radius", (float)ball.Radius);
+            SetUniform(gl, shader, name + ".Color", new Vector3d(1, 0, 0));
         }
     }
 }
